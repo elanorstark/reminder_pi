@@ -1,8 +1,10 @@
 import os
 import signal
+import time
 
 from reminders.buttons import Buttons
 from reminders.menu import MenuList, ActionItem
+from reminders.screen import Screen
 
 
 def power_off():
@@ -18,8 +20,13 @@ def power_off():
     exit()
 
 
+# example of a menu with sub-menus and actions
 def setup_menu():
-    carrot = ActionItem("carrot", lambda: print("here is a carrot"))
+    def carrot():
+        Screen.text_screen("carrot")
+        time.sleep(3)
+
+    carrot = ActionItem("carrot", carrot)
     pea = ActionItem("pea", lambda: print("here is a pea"))
     cod = ActionItem("cod", lambda: print("here is a cod"))
     parrot = ActionItem("parrot", lambda: print("here is a parrot"))
@@ -38,6 +45,7 @@ def setup_menu():
     MenuList.initialise(top_level)
 
 
+# handles a button press and updates screen
 def button_handler(button):
     MenuList.current().handle_button_press(button)
     MenuList.current().display()
