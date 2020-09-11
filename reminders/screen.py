@@ -20,18 +20,24 @@ class Screen:
     img = Image.new('RGB', (disp.width, disp.height), color=BG_COLOUR)
     draw = ImageDraw.Draw(img)
 
+    # prepares black rectangle to be drawn on screen
     @staticmethod
     def clear():
         Screen.draw.rectangle((0, 0, Screen.disp.width, Screen.disp.height), fill=BG_COLOUR)
 
+    # prepares text to be drawn on screen
+    # can take position, font and colour optionally.
     @staticmethod
     def draw_text(text, position=(0, 0), font=FONT, fill=(255, 255, 255)):
         Screen.draw.text(position, text, fill, font)
 
+    # updates the screen to show the prepared image
     @staticmethod
     def update_screen():
         Screen.disp.display(Screen.img)
 
+    # clears screen, adds text, then displays image
+    # example of how to use functions above
     @staticmethod
     def text_screen(text="Initial\nScreen"):
         Screen.clear()
