@@ -3,6 +3,8 @@ from RPi import GPIO
 
 class Buttons:
 
+    # sets up buttons with handler provided
+    # handler is a function taking the letter of the button pressed
     @staticmethod
     def setup_buttons(handler):
         # BCM numbering scheme
