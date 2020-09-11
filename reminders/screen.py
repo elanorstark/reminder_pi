@@ -5,6 +5,7 @@ import ST7789
 
 BG_COLOUR = (0, 0, 0)
 FONT = ImageFont.truetype("assets/font/RobotoMono-Regular.ttf", 24)
+BL_VALUE = 13
 
 
 class Screen:
@@ -13,17 +14,35 @@ class Screen:
         cs=ST7789.BG_SPI_CS_FRONT,
         dc=9,
         rst=25,
-        backlight=13,
+        backlight=BL_VALUE,
         spi_speed_hz=80 * 1000 * 1000
     )
 
     img = Image.new('RGB', (disp.width, disp.height), color=BG_COLOUR)
     draw = ImageDraw.Draw(img)
 
+    backlight_status = True
+
     # prepares black rectangle to be drawn on screen
     @staticmethod
     def clear():
         Screen.draw.rectangle((0, 0, Screen.disp.width, Screen.disp.height), fill=BG_COLOUR)
+
+    @staticmethod
+    def off():
+        Screen.clear()
+        Screen.update_screen()
+        Screen.disp.set_backlight(0)
+        Screen.backlight_status = False
+
+    @staticmethod
+    def toggle_backlight():
+        if not Screen.backlight_status:
+            Screen.disp.set_backlight(BL_VALUE)
+            Screen.update_screen()
+            Screen.backlight_status = True
+        else:
+            Screen.off()
 
     # prepares text to be drawn on screen
     # can take position, font and colour optionally.

@@ -63,8 +63,12 @@ class MenuList(MenuItem):
             self.position %= len(self.items)
         elif button == "x":
             # home/toplevel button
-            MenuList.menu_stack = MenuList.menu_stack[:1]
-            self.position = 0
+            print(len(MenuList.menu_stack) > 1, MenuList.menu_stack)
+            if len(MenuList.menu_stack) > 1:
+                MenuList.menu_stack = MenuList.menu_stack[:1]
+                MenuList.menu_stack[0].position = 0
+            else:
+                Screen.toggle_backlight()
 
     # returns current menu, ie top of stack
     @staticmethod
