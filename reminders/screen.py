@@ -2,9 +2,12 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 import ST7789
+import random
 
 BG_COLOUR = (0, 0, 0)
-FONT = ImageFont.truetype("assets/font/RobotoMono-Regular.ttf", 24)
+FONT = ImageFont.truetype("assets/font/RobotoMono-Regular.ttf", 22)
+FONT_L = ImageFont.truetype("assets/font/RobotoMono-Bold.ttf", 24)
+FONT_XL = ImageFont.truetype("assets/font/RobotoMono-Regular.ttf", 60)
 BL_VALUE = 13
 
 
@@ -63,4 +66,26 @@ class Screen:
     def text_screen(text="Initial\nScreen"):
         Screen.clear()
         Screen.draw_text(text)
+        Screen.update_screen()
+
+    @staticmethod
+    def home_screen(top_text, time_formatted, date_formatted):
+        Screen.clear()
+        epsilon_x = random.randint(-4, 4)
+        epsilon_y = random.randint(-4, 4)
+        Screen.draw_text(top_text, position=(10 + epsilon_x, 10 + epsilon_y),
+                         font=FONT_L)
+        Screen.draw_text(time_formatted, position=(33 + epsilon_x, 70 + epsilon_y),
+                         font=FONT_XL)
+        Screen.draw_text(date_formatted, position=(45 + epsilon_x, 140 + epsilon_y))
+        Screen.update_screen()
+
+    @staticmethod
+    def menu_screen(top_text, main_text):
+        Screen.clear()
+        top_x, top_y = Screen.draw.textsize(top_text, FONT_L)
+        # main_x, main_y = Screen.draw.textsize("> ", FONT)
+        Screen.draw_text(top_text, position=(10, 10),
+                         font=FONT_L)
+        Screen.draw_text(main_text, position=(10, 20 + top_y))
         Screen.update_screen()

@@ -34,7 +34,7 @@ class SelectableItem(ActionItem):
 
     @property
     def name(self):
-        return self._name + ("[.]" if self.is_selected() else "[ ]")
+        return self._name + ("[×]" if self.is_selected() else "[ ]")
 
 
 class Menu(ListMenuItem):
@@ -101,14 +101,14 @@ class ListMenu(Menu):
     def display(self, title=None):
         if not title:
             title = self.name
-        text = title + "\n" + ("-" * len(title)) + "\n"
+        text = ""
         for i, item in enumerate(self.items):
             if i == self.position:
                 text += "> {}\n".format(item.name)
             else:
                 text += "  {}\n".format(item.name)
-        print(text)
-        Screen.text_screen(text)
+        print(title, "\n", text)
+        Screen.menu_screen(title, text)
 
     # adds menu to the stack when selected
     def selected(self):
@@ -141,7 +141,7 @@ class HomeMenu(Menu):
 
     def display(self):
         now = datetime.datetime.now()
-        Screen.text_screen(self.name + "\n\n" + now.strftime("%H:%M") + "\n" + now.strftime("%d/%m"))
+        Screen.home_screen(self.name, now.strftime("%H:%M"), now.strftime("%a %d %b"))
 
 
 class TaskMenu(ListMenu):

@@ -52,7 +52,7 @@ def setup_menu():
     animal = ListMenu("animal", [mammal, bird, cod])
     vegetable = ListMenu("vegetable", [pea, carrot])
 
-    top_level = ListMenu("main_menu", [animal, vegetable, exit_item, shutdown])
+    top_level = ListMenu("Main Menu", [animal, vegetable, exit_item, shutdown])
     Menu.initialise(HomeMenu(top_level))
 
 
