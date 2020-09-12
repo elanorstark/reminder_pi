@@ -26,6 +26,8 @@ class Screen:
     # prepares black rectangle to be drawn on screen
     @staticmethod
     def clear():
+        if not Screen.backlight_status:
+            Screen.toggle_backlight()
         Screen.draw.rectangle((0, 0, Screen.disp.width, Screen.disp.height), fill=BG_COLOUR)
 
     @staticmethod

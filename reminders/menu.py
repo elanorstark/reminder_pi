@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from typing import List
 
@@ -124,7 +124,7 @@ class HomeMenu(Menu):
             Menu.menu_stack.append(BacklightOffMenu())
 
     def display(self):
-        now = datetime.now()
+        now = datetime.datetime.now()
         Screen.text_screen(self.name + "\n\n" + now.strftime("%H:%M") + "\n" + now.strftime("%d/%m"))
 
 
@@ -161,13 +161,23 @@ class AlertMenu(Menu):
     def __init__(self, task):
         super().__init__(task.name)
         self.task = task
+        self.delayed_for = 0
+        self.delay_period = datetime.timedelta(seconds=10)
 
     def display(self):
-        Screen.text_screen(self.name + " alert!!!")
+        if self.delayed_for > 0:
+            delay_length = "\n\nDelayed for:\n" + str(self.delayed_for * self.delay_period)
+        else:
+            delay_length = ""
+        Screen.text_screen(
+            self.name + " alert!!!\nAlert time:\n" + self.task.task_time.strftime("%H:%M") + delay_length)
 
     def handle_button_press(self, button):
         if button == "a":
+            print("a pressed in alert")
             Menu.menu_stack.pop()
         elif button == "y":
-            # add back to alerts in 5? minutes
-            pass
+            print("y pressed in alert")
+            self.task.delay(self.delay_period)
+            self.delayed_for += 1
+            self.display()

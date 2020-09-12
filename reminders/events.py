@@ -4,8 +4,6 @@ from RPi import GPIO
 from threading import Lock, Thread
 import time
 
-from reminders.tasks import Task
-
 _lock = Lock()
 
 
@@ -28,7 +26,7 @@ class Buttons:
         GPIO.setup(list(BUTTONS.keys()), GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         for pin in BUTTONS:
-            GPIO.add_event_detect(pin, GPIO.FALLING, lock_button_handler, bouncetime=200)
+            GPIO.add_event_detect(pin, GPIO.FALLING, lock_button_handler, bouncetime=300)
 
 
 class Clock:
@@ -45,7 +43,7 @@ class Clock:
                     with _lock:
                         handler()
 
-        updater = Thread(target=clock_updater)
+        updater = Thread(target=clock_updater, daemon=True)
         updater.start()
 
 
@@ -53,19 +51,25 @@ class Alerts:
     scheduled = []
 
     @staticmethod
-    def add_to_schedule(task: Task):
-        with _lock:
+    def add_to_schedule(task):
+        if task not in Alerts.scheduled:
             Alerts.scheduled.append(task)
             Alerts.scheduled.sort(key=lambda x: x.task_time)
+        print("scheduled:", Alerts.scheduled)
 
     @staticmethod
     def set_up_alerts():
         def alert_checker():
+            alert_tf = False
             while True:
                 time.sleep(5)
                 with _lock:
                     if len(Alerts.scheduled) > 0 and datetime.now() >= Alerts.scheduled[0].task_time:
-                        Alerts.scheduled.pop(0).alert()
+                        alert_now = Alerts.scheduled.pop(0)
+                        alert_tf = True
+                if alert_tf:
+                    alert_tf = False
+                    alert_now.alert()
 
-        updater = Thread(target=alert_checker())
+        updater = Thread(target=alert_checker(), daemon=True)
         updater.start()
