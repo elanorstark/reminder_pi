@@ -18,6 +18,7 @@ def power_off():
     #     if off == "n":
     #         exit()
     Screen.off()
+    time.sleep(0.5)
     os.system("sudo shutdown now")
     exit()
 
@@ -69,6 +70,6 @@ if __name__ == '__main__':
     Buttons.setup_buttons(button_handler)
     Clock.set_up_clock(clock_handler)
     Menu.current().display()
-    Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=5)))
+    Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=10)))
     Alerts.set_up_alerts()
     signal.pause()
