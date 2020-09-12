@@ -4,6 +4,8 @@ from RPi import GPIO
 from threading import Lock, Thread
 import time
 
+from reminders.tasks import Task
+
 _lock = Lock()
 
 
@@ -33,7 +35,7 @@ class Clock:
     last_time = datetime.now()
 
     @staticmethod
-    def setup_clock(handler):
+    def set_up_clock(handler):
         def clock_updater():
             while True:
                 time.sleep(1)
@@ -44,4 +46,26 @@ class Clock:
                         handler()
 
         updater = Thread(target=clock_updater)
+        updater.start()
+
+
+class Alerts:
+    scheduled = []
+
+    @staticmethod
+    def add_to_schedule(task: Task):
+        with _lock:
+            Alerts.scheduled.append(task)
+            Alerts.scheduled.sort(key=lambda x: x.task_time)
+
+    @staticmethod
+    def set_up_alerts():
+        def alert_checker():
+            while True:
+                time.sleep(5)
+                with _lock:
+                    if len(Alerts.scheduled) > 0 and datetime.now() >= Alerts.scheduled[0].task_time:
+                        Alerts.scheduled.pop(0).alert()
+
+        updater = Thread(target=alert_checker())
         updater.start()

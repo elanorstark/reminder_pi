@@ -1,10 +1,12 @@
 import os
 import signal
 import time
+import datetime
 
-from reminders.events import Buttons, Clock
+from reminders.events import Buttons, Clock, Alerts
 from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu
 from reminders.screen import Screen
+from reminders.tasks import NamedTask
 
 
 def power_off():
@@ -65,6 +67,8 @@ def clock_handler():
 if __name__ == '__main__':
     setup_menu()
     Buttons.setup_buttons(button_handler)
-    Clock.setup_clock(clock_handler)
+    Clock.set_up_clock(clock_handler)
     Menu.current().display()
+    Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=5)))
+    Alerts.set_up_alerts()
     signal.pause()

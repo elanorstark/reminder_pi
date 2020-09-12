@@ -2,7 +2,6 @@ from datetime import datetime
 
 from typing import List
 
-from reminders.events import Clock
 from reminders.screen import Screen
 
 
@@ -107,7 +106,6 @@ class HomeMenu(Menu):
     def __init__(self, main_menu):
         super().__init__("Home")
         self.main_menu = main_menu
-        self.clock = Clock()
 
     def handle_time(self):
         self.display()
@@ -157,3 +155,19 @@ class BacklightOffMenu(Menu):
         if button == "x":
             Menu.menu_stack.pop()
             Screen.toggle_backlight()
+
+
+class AlertMenu(Menu):
+    def __init__(self, task):
+        super().__init__(task.name)
+        self.task = task
+
+    def display(self):
+        Screen.text_screen(self.name + " alert!!!")
+
+    def handle_button_press(self, button):
+        if button == "a":
+            Menu.menu_stack.pop()
+        elif button == "y":
+            # add back to alerts in 5? minutes
+            pass
