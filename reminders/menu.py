@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from typing import List
+
+from reminders.events import Clock
 from reminders.screen import Screen
 
 
@@ -34,6 +36,9 @@ class Menu(ListMenuItem):
     # decides what to do depending on which button was pressed
     # a = select, b = up menu, y = down menu, x = home screen
     def handle_button_press(self, button):
+        pass
+
+    def handle_time(self):
         pass
 
     # returns current menu, ie top of stack
@@ -102,6 +107,10 @@ class HomeMenu(Menu):
     def __init__(self, main_menu):
         super().__init__("Home")
         self.main_menu = main_menu
+        self.clock = Clock()
+
+    def handle_time(self):
+        self.display()
 
     def handle_button_press(self, button):
         if button == "a":

@@ -2,7 +2,7 @@ import os
 import signal
 import time
 
-from reminders.buttons import Buttons
+from reminders.events import Buttons, Clock
 from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu
 from reminders.screen import Screen
 
@@ -18,6 +18,7 @@ def power_off():
     Screen.off()
     os.system("sudo shutdown now")
     exit()
+
 
 def exit_program():
     Screen.off()
@@ -57,8 +58,13 @@ def button_handler(button):
     Menu.current().display()
 
 
+def clock_handler():
+    Menu.current().handle_time()
+
+
 if __name__ == '__main__':
     setup_menu()
     Buttons.setup_buttons(button_handler)
+    Clock.setup_clock(clock_handler)
     Menu.current().display()
     signal.pause()
