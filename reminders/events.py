@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from RPi import GPIO
 from threading import Lock, Thread
 import time
@@ -28,14 +30,17 @@ class Buttons:
 
 
 class Clock:
+    time_now = datetime.now()
 
     @staticmethod
     def setup_clock(handler):
         def clock_updater():
             while True:
-                time.sleep(5)
-                with _lock:
-                    handler()
+                time.sleep(1)
+                if Clock.time_now.hour != datetime.now().hour or Clock.time_now.minute != datetime.now().minute:
+                    Clock.time_now = datetime.now()
+                    with _lock:
+                        handler()
 
         updater = Thread(target=clock_updater)
         updater.start()
