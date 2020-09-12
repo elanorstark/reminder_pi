@@ -96,6 +96,7 @@ class ListMenu(Menu):
         self.position = 0
 
 
+# for the highest level of menus - doesn't allow going back past here
 class HomeMenu(Menu):
 
     def __init__(self, main_menu):
@@ -113,7 +114,7 @@ class HomeMenu(Menu):
             # check original design
             pass
         elif button == "x":
-            Screen.toggle_backlight()
+            Menu.menu_stack.append(BacklightOffMenu())
 
     def display(self):
         now = datetime.now()
@@ -135,3 +136,15 @@ class TimeMenu(Menu):
     def display(self):
         Screen.text_screen(self.name + "\n")
 
+
+class BacklightOffMenu(Menu):
+    def __init__(self):
+        super().__init__("Backlight")
+
+    def display(self):
+        Screen.off()
+
+    def handle_button_press(self, button):
+        if button == "x":
+            Menu.menu_stack.pop()
+            Screen.toggle_backlight()
