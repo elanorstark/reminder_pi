@@ -34,7 +34,14 @@ class NamedTask(Task):
     def __init__(self, name, task_time):
         super().__init__(name)
         self.task_time = task_time
+        self.on = True
+        self.complete = False
 
+    def on_toggle(self):
+        self.on = not self.on
+
+    def complete_toggle(self):
+        self.complete = not self.complete
 
 class CountdownTimer(Task):
     def __init__(self, task_time):

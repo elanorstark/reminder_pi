@@ -7,7 +7,11 @@ from reminders.screen import Screen
 
 class ListMenuItem:
     def __init__(self, name):
-        self.name = str(name)
+        self._name = str(name)
+
+    @property
+    def name(self):
+        return self._name
 
     def selected(self):
         pass
@@ -21,6 +25,16 @@ class ActionItem(ListMenuItem):
 
     def selected(self):
         self.action()
+
+
+class SelectableItem(ActionItem):
+    def __init__(self, name, is_selected, toggle, pad_width=9):
+        super().__init__(name.ljust(pad_width), toggle)
+        self.is_selected = is_selected
+
+    @property
+    def name(self):
+        return self._name + ("[.]" if self.is_selected() else "[ ]")
 
 
 class Menu(ListMenuItem):
@@ -84,13 +98,15 @@ class ListMenu(Menu):
             Menu.menu_stack = Menu.menu_stack[:1]
 
     # displays menu on screen
-    def display(self):
-        text = self.name + "\n" + ("-" * len(self.name)) + "\n"
+    def display(self, title=None):
+        if not title:
+            title = self.name
+        text = title + "\n" + ("-" * len(title)) + "\n"
         for i, item in enumerate(self.items):
             if i == self.position:
-                text += "A -> {}\n".format(item.name)
+                text += "> {}\n".format(item.name)
             else:
-                text += "     {}\n".format(item.name)
+                text += "  {}\n".format(item.name)
         print(text)
         Screen.text_screen(text)
 
@@ -128,10 +144,20 @@ class HomeMenu(Menu):
         Screen.text_screen(self.name + "\n\n" + now.strftime("%H:%M") + "\n" + now.strftime("%d/%m"))
 
 
-class TaskMenu(Menu):
+class TaskMenu(ListMenu):
 
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, task):
+        self.task = task
+        options = [
+            SelectableItem("On", lambda: self.task.on, self.task.on_toggle),
+            SelectableItem("Complete", lambda: self.task.complete, self.task.complete_toggle),
+            TimeMenu(self.task.task_time.strftime("Time     %H:%M"))
+        ]
+        super().__init__(self.task.name, options)
+
+    def display(self, title=None):
+        title = "Edit " + self.name
+        super(TaskMenu, self).display(title)
 
 
 class TimeMenu(Menu):

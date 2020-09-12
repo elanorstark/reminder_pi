@@ -4,7 +4,7 @@ import time
 import datetime
 
 from reminders.events import Buttons, Clock, Alerts
-from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu
+from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu, TaskMenu
 from reminders.screen import Screen
 from reminders.tasks import NamedTask
 
@@ -46,7 +46,8 @@ def setup_menu():
     shutdown = ActionItem("shutdown", power_off)
     exit_item = ActionItem("exit", exit_program)
 
-    mammal = ListMenu("mammal", [cow, sheep])
+    mammal = ListMenu("mammal",
+                      [cow, sheep, TaskMenu(NamedTask("My Task", datetime.datetime.now() + datetime.timedelta(20)))])
     bird = ListMenu("bird", [robin, parrot])
     animal = ListMenu("animal", [mammal, bird, cod])
     vegetable = ListMenu("vegetable", [pea, carrot])
@@ -70,6 +71,6 @@ if __name__ == '__main__':
     Buttons.setup_buttons(button_handler)
     Clock.set_up_clock(clock_handler)
     Menu.current().display()
-    Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=10)))
+    # Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=10)))
     Alerts.set_up_alerts()
     signal.pause()
