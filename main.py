@@ -3,7 +3,7 @@ import signal
 import time
 
 from reminders.buttons import Buttons
-from reminders.menu import MenuList, ActionItem
+from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu
 from reminders.screen import Screen
 
 
@@ -42,23 +42,23 @@ def setup_menu():
     shutdown = ActionItem("shutdown", power_off)
     exit_item = ActionItem("exit", exit_program)
 
-    mammal = MenuList("mammal", [cow, sheep])
-    bird = MenuList("bird", [robin, parrot])
-    animal = MenuList("animal", [mammal, bird, cod])
-    vegetable = MenuList("vegetable", [pea, carrot])
+    mammal = ListMenu("mammal", [cow, sheep])
+    bird = ListMenu("bird", [robin, parrot])
+    animal = ListMenu("animal", [mammal, bird, cod])
+    vegetable = ListMenu("vegetable", [pea, carrot])
 
-    top_level = MenuList("main_menu", [animal, vegetable, exit_item, shutdown])
-    MenuList.initialise(top_level)
+    top_level = ListMenu("main_menu", [animal, vegetable, exit_item, shutdown])
+    Menu.initialise(HomeMenu(top_level))
 
 
 # handles a button press and updates screen
 def button_handler(button):
-    MenuList.current().handle_button_press(button)
-    MenuList.current().display()
+    Menu.current().handle_button_press(button)
+    Menu.current().display()
 
 
 if __name__ == '__main__':
     setup_menu()
     Buttons.setup_buttons(button_handler)
-    MenuList.current().display()
+    Menu.current().display()
     signal.pause()
