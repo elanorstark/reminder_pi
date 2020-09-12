@@ -25,10 +25,9 @@ class Task:
 
     def delay(self, delta):
         print("going to delay now")
-        self.task_time = max(self.task_time,datetime.now()) + delta
+        self.task_time = max(self.task_time, datetime.now()) + delta
         Alerts.add_to_schedule(self)
         print("added back to schedule")
-
 
 
 class NamedTask(Task):
