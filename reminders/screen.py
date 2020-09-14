@@ -2,13 +2,14 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 import ST7789
-import random
 
 BG_COLOUR = (0, 0, 0)
 FONT = ImageFont.truetype("assets/font/RobotoMono-Regular.ttf", 22)
 FONT_L = ImageFont.truetype("assets/font/RobotoMono-Bold.ttf", 24)
 FONT_XL = ImageFont.truetype("assets/font/RobotoMono-Regular.ttf", 60)
 BL_VALUE = 13
+
+FONT_SIZE_ALIASES = {0: FONT, 1: FONT_L, 2: FONT_XL}
 
 
 class Screen:
@@ -54,6 +55,7 @@ class Screen:
     @staticmethod
     def draw_text(text, position=(0, 0), font=FONT, fill=(255, 255, 255)):
         Screen.draw.text(position, text, fill, font)
+        return Screen.draw.textsize(text, font)
 
     # updates the screen to show the prepared image
     @staticmethod
@@ -89,4 +91,29 @@ class Screen:
         Screen.draw_text(top_text, position=(10, 10),
                          font=FONT_L)
         Screen.draw_text(main_text, position=(10, 20 + top_y))
+        Screen.update_screen()
+
+    @staticmethod
+    def multi_line_text(lines=None, start_xy=(0, 0), align="top"):
+        for i in range(len(lines)):
+            lines[i][1] = int(round(lines[i][1], 0))
+            if lines[i][1] > max(FONT_SIZE_ALIASES):
+                lines[i][1] = max(FONT_SIZE_ALIASES)
+            elif lines[i][1] < min(FONT_SIZE_ALIASES):
+                lines[i][1] = min(FONT_SIZE_ALIASES)
+
+        Screen.clear()
+        x, y = start_xy
+        i = 0
+        while i < len(lines):
+            if Screen.draw.textsize(lines[i][0], FONT_SIZE_ALIASES[lines[i][1]])[0] > Screen.disp.width:
+                lines.insert(i + 1, [lines[i][0][-1], lines[i][1]])
+                lines[i][0] = lines[i][0][0:-1]
+                while Screen.draw.textsize(lines[i][0], FONT_SIZE_ALIASES[lines[i][1]])[0] > Screen.disp.width:
+                    lines[i + 1][0] = lines[i][0][-1] + lines[i + 1][0]
+                    lines[i][0] = lines[i][0][0:-1]
+                    if len(lines) == 1:
+                        break
+            y += Screen.draw_text(lines[i][0], (x, y), FONT_SIZE_ALIASES[lines[i][1]])[1]
+            i += 1
         Screen.update_screen()
