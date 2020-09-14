@@ -71,13 +71,14 @@ class Screen:
     @staticmethod
     def home_screen(top_text, time_formatted, date_formatted):
         Screen.clear()
-        epsilon_x = random.randint(-4, 4)
-        epsilon_y = random.randint(-4, 4)
+        # epsilon_x = random.randint(-4, 4)
+        epsilon_x = sum(map(ord, time_formatted)) % 9 - 4
+        epsilon_y = sum(map(ord, date_formatted + time_formatted)) % 9 - 4
         Screen.draw_text(top_text, position=(10 + epsilon_x, 10 + epsilon_y),
                          font=FONT_L)
-        Screen.draw_text(time_formatted, position=(33 + epsilon_x, 70 + epsilon_y),
+        Screen.draw_text(time_formatted, position=(25 + epsilon_x, 70 + epsilon_y),
                          font=FONT_XL)
-        Screen.draw_text(date_formatted, position=(45 + epsilon_x, 140 + epsilon_y))
+        Screen.draw_text(date_formatted, position=(50 + epsilon_x, 140 + epsilon_y))
         Screen.update_screen()
 
     @staticmethod
