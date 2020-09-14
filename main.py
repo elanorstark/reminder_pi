@@ -6,7 +6,7 @@ import datetime
 from reminders.events import Buttons, Clock, Alerts
 from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu, TaskMenu
 from reminders.screen import Screen
-from reminders.tasks import NamedTask
+from reminders.scheduled_tasks import NamedTask
 
 
 def power_off():

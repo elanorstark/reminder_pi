@@ -43,6 +43,7 @@ class NamedTask(Task):
     def complete_toggle(self):
         self.complete = not self.complete
 
+
 class CountdownTimer(Task):
     def __init__(self, task_time):
         super().__init__("Countdown Timer")
