@@ -48,7 +48,8 @@ def setup_menu():
     exit_item = ActionItem("exit", exit_program)
 
     mammal = ListMenu("mammal",
-                      [cow, sheep, TaskMenu(NamedTask("My Task", datetime.datetime.now() + datetime.timedelta(20)))])
+                      [cow, sheep,
+                       TaskMenu(NamedTask("My Task", datetime.datetime.now() + datetime.timedelta(minutes=1)))])
     bird = ListMenu("bird", [robin, parrot])
     animal = ListMenu("animal", [mammal, bird, cod])
     vegetable = ListMenu("vegetable", [pea, carrot])
@@ -69,14 +70,15 @@ def clock_handler():
 
 
 if __name__ == '__main__':
+    RepeatTask.load_tasks()
     setup_menu()
     Buttons.setup_buttons(button_handler)
     Menu.current().display()
     # for testing, adds tasks at 00:02 and 00:03 of current day
-    RepeatTask.add_task("test 1",
-                        datetime.time(0, 2), [True, True, True, True, True, True, True])
-    RepeatTask.add_task("test 2",
-                        datetime.time(0, 3), [True, True, True, True, True, True, True])
+    # RepeatTask.add_task("test 1",
+    #                     datetime.time(0, 2), [True, True, True, True, True, True, True])
+    # RepeatTask.add_task("test 2",
+    #                     datetime.time(0, 3), [True, True, True, True, True, True, True])
     RepeatTask.set_up_schedule()
     Clock.set_up_clock(clock_handler)
     # Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=10)))

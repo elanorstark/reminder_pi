@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from reminders.events import Alerts
 from reminders.scheduled_tasks import NamedTask
@@ -41,3 +42,11 @@ class RepeatTask:
                     Alerts.add_to_schedule(NamedTask(task.name, scheduled_time, parent_task=task))
 
         Alerts.last_updated = time_now
+
+    @staticmethod
+    def load_tasks():
+        with open("data/example.json") as json_file:
+            test = json.load(json_file)
+        for task in test["tasks"]:
+            hour, minute = task["time"].split()
+            RepeatTask.tasks.append(RepeatTask(task["name"], datetime.time(int(hour), int(minute)), task["days"]))
