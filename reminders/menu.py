@@ -204,3 +204,5 @@ class AlertMenu(Menu):
             self.task.delay(self.delay_period)
             self.delayed_for += 1
             self.display()
+        elif button == "b":
+            self.task.complete_toggle()

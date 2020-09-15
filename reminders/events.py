@@ -52,11 +52,21 @@ class Alerts:
     last_updated = datetime.datetime.fromtimestamp(0)
 
     @staticmethod
+    def print_schedule():
+        print("scheduled:", [each.name + " " + str(each.task_time) for each in Alerts.scheduled])
+
+    @staticmethod
     def add_to_schedule(task):
         if task not in Alerts.scheduled:
             Alerts.scheduled.append(task)
             Alerts.scheduled.sort(key=lambda x: x.task_time)
-        print("scheduled:", Alerts.scheduled)
+        Alerts.print_schedule()
+
+    @staticmethod
+    def remove_from_schedule(task):
+        if task in Alerts.scheduled:
+            Alerts.scheduled.remove(task)
+        Alerts.print_schedule()
 
     @staticmethod
     def set_up_alerts():
