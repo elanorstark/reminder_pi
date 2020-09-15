@@ -76,6 +76,8 @@ if __name__ == '__main__':
     Buttons.setup_buttons(button_handler)
     RepeatTask.add_task("test 1",
                         datetime.time(0, 2), [True, True, True, True, True, True, True])
+    RepeatTask.add_task("test 1",
+                        datetime.time(0, 3), [True, True, True, True, True, True, True])
     schedule_handler()
     Clock.add_clock_task(clock_handler)
     Clock.add_clock_task(schedule_handler)

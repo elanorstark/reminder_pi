@@ -31,13 +31,10 @@ class RepeatTask:
 
     @staticmethod
     def set_up_schedule():
-        print("setting up schedule")
         time_now = datetime.datetime.now()
         midnight = time_now - datetime.timedelta(hours=time_now.hour, minutes=time_now.minute, seconds=time_now.second,
                                                  microseconds=time_now.microsecond)
-        print(Alerts.last_updated < midnight)
         if Alerts.last_updated < midnight:
-            print(RepeatTask.tasks)
             for task in RepeatTask.tasks:
                 if task.task_days[datetime.datetime.now().weekday()]:
                     scheduled_time = midnight + datetime.timedelta(hours=task.task_time.hour,

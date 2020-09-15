@@ -70,7 +70,6 @@ class Alerts:
         def alert_checker():
             alert_tf = False
             while True:
-                print(Alerts.scheduled)
                 time.sleep(5)
                 with _lock:
                     if len(Alerts.scheduled) > 0 and datetime.datetime.now() >= Alerts.scheduled[0].task_time:
