@@ -192,18 +192,15 @@ class AlertMenu(Menu):
 
     def display(self):
         if self.delayed_for > 0:
-            delay_length = "\n\nDelayed for:\n" + str(self.delayed_for * self.delay_period)
+            Screen.multi_line_text([[self.name, 1], ["Delaying until:", 0], [self.task.task_time.strftime("%H:%M"), 1],
+                                    [" ", 0], ["Delayed for", 0], [str(self.delayed_for * self.delay_period), 0]])
         else:
-            delay_length = ""
-        Screen.text_screen(
-            self.name + " alert!!!\nAlert time:\n" + self.task.task_time.strftime("%H:%M") + delay_length)
+            Screen.multi_line_text([[self.name, 1], ["Alert time:", 0], [self.task.task_time.strftime("%H:%M"), 1]])
 
     def handle_button_press(self, button):
         if button == "a":
-            print("a pressed in alert")
             Menu.menu_stack.pop()
         elif button == "y":
-            print("y pressed in alert")
             self.task.delay(self.delay_period)
             self.delayed_for += 1
             self.display()
