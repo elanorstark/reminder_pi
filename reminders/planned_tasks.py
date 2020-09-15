@@ -48,5 +48,5 @@ class RepeatTask:
         with open("data/example.json") as json_file:
             test = json.load(json_file)
         for task in test["tasks"]:
-            hour, minute = task["time"].split()
+            hour, minute = task["time"].split()[0:2]
             RepeatTask.tasks.append(RepeatTask(task["name"], datetime.time(int(hour), int(minute)), task["days"]))
