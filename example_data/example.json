@@ -1,0 +1,30 @@
+{
+  "tasks": [
+    {
+      "name": "Eat",
+      "time": "18 00",
+      "days": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "name": "Sleep",
+      "time": "22 00",
+      "days": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    }
+  ]
+}
