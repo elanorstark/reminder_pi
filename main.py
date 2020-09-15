@@ -38,23 +38,17 @@ def setup_menu():
 
     carrot = ActionItem("carrot", carrot)
     pea = ActionItem("pea", lambda: print("here is a pea"))
-    cod = ActionItem("cod", lambda: print("here is a cod"))
-    parrot = ActionItem("parrot", lambda: print("here is a parrot"))
-    robin = ActionItem("robin", lambda: print("here is a robin"))
-    sheep = ActionItem("sheep", lambda: print("here is a sheep"))
-    cow = ActionItem("cow", lambda: print("here is a cow"))
 
     shutdown = ActionItem("shutdown", power_off)
     exit_item = ActionItem("exit", exit_program)
 
-    mammal = ListMenu("mammal",
-                      [cow, sheep,
-                       TaskMenu(NamedTask("My Task", datetime.datetime.now() + datetime.timedelta(minutes=1)))])
-    bird = ListMenu("bird", [robin, parrot])
-    animal = ListMenu("animal", [mammal, bird, cod])
-    vegetable = ListMenu("vegetable", [pea, carrot])
+    def schedule():
+        return [TaskMenu(x) for x in Alerts.scheduled]
 
-    top_level = ListMenu("Main Menu", [animal, vegetable, exit_item, shutdown])
+    schedule_item = ListMenu("Schedule", schedule)
+    vegetable = ListMenu("vegetable", lambda: [pea, carrot])
+
+    top_level = ListMenu("Main Menu", lambda: [schedule_item, vegetable, exit_item, shutdown])
     Menu.initialise(HomeMenu(top_level))
 
 

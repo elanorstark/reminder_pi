@@ -72,11 +72,11 @@ class Menu(ListMenuItem):
 
 
 class ListMenu(Menu):
-
     # initialise a MenuList
-    def __init__(self, name: str, items: List[ListMenuItem]):
+    def __init__(self, name: str, items):
         super().__init__(name)
-        self.items: List[ListMenuItem] = [ActionItem("..", Menu.back)] + items
+        self.unevaluated = items
+        self.items: List[ListMenuItem] = [ActionItem("..", Menu.back)]
         self.position = 0
 
     # decides what to do depending on which button was pressed
@@ -101,6 +101,10 @@ class ListMenu(Menu):
     def display(self, title=None):
         if not title:
             title = self.name
+
+        self.items = [ActionItem("..", Menu.back)] + self.unevaluated()
+        self.position = min(len(self.items) - 1, self.position)
+
         text = ""
         for i, item in enumerate(self.items):
             if i == self.position:
@@ -153,7 +157,7 @@ class TaskMenu(ListMenu):
             SelectableItem("Complete", lambda: self.task.complete, self.task.complete_toggle),
             TimeMenu(self.task.task_time.strftime("Time     %H:%M"))
         ]
-        super().__init__(self.task.name, options)
+        super().__init__(self.task.name, lambda: options)
 
     def display(self, title=None):
         title = "Edit " + self.name
