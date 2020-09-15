@@ -6,12 +6,13 @@ from reminders.menu import AlertMenu, Menu
 
 
 class Task:
-    def __init__(self, name, time=datetime.datetime.fromtimestamp(0)):
+    def __init__(self, name, time, parent_task=None):
         self.name = str(name)
         self.task_time = time
+        self.parent_task = parent_task
 
     def alert(self):
-        os.system("play /home/pi/reminder_pi/assets/sounds/beam_sound.wav &")
+        os.system("play /home/pi/reminder_pi/assets/sounds/beam_sound.wav > /dev/null 2>&1 &")
         print("Alert: " + self.name)
 
         to_remove = []
@@ -24,16 +25,13 @@ class Task:
         Menu.current().display()
 
     def delay(self, delta):
-        print("going to delay now")
         self.task_time = max(self.task_time, datetime.datetime.now()) + delta
         Alerts.add_to_schedule(self)
-        print("added back to schedule")
 
 
 class NamedTask(Task):
-    def __init__(self, name, task_time):
-        super().__init__(name)
-        self.task_time = task_time
+    def __init__(self, name, task_time, parent_task=None):
+        super().__init__(name, task_time, parent_task)
         self.on = True
         self.complete = False
 

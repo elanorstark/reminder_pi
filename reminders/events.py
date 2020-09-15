@@ -31,10 +31,9 @@ class Buttons:
 
 class Clock:
     last_time = datetime.datetime.now()
-    handlers = []
 
     @staticmethod
-    def set_up_clock():
+    def set_up_clock(handler):
         def clock_updater():
             while True:
                 time.sleep(1)
@@ -42,16 +41,10 @@ class Clock:
                 if Clock.last_time.hour != now.hour or Clock.last_time.minute != now.minute:
                     Clock.last_time = now
                     with _lock:
-                        for handler in Clock.handlers:
-                            print(handler)
-                            handler()
+                        handler()
 
         updater = Thread(target=clock_updater, daemon=True)
         updater.start()
-
-    @staticmethod
-    def add_clock_task(handler):
-        Clock.handlers.append(handler)
 
 
 class Alerts:

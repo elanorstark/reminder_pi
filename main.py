@@ -65,24 +65,20 @@ def button_handler(button):
 
 def clock_handler():
     Menu.current().handle_time()
-
-
-def schedule_handler():
     RepeatTask.set_up_schedule()
 
 
 if __name__ == '__main__':
     setup_menu()
     Buttons.setup_buttons(button_handler)
+    Menu.current().display()
+    # for testing, adds tasks at 00:02 and 00:03 of current day
     RepeatTask.add_task("test 1",
                         datetime.time(0, 2), [True, True, True, True, True, True, True])
-    RepeatTask.add_task("test 1",
+    RepeatTask.add_task("test 2",
                         datetime.time(0, 3), [True, True, True, True, True, True, True])
-    schedule_handler()
-    Clock.add_clock_task(clock_handler)
-    Clock.add_clock_task(schedule_handler)
-    Clock.set_up_clock()
-    Menu.current().display()
+    RepeatTask.set_up_schedule()
+    Clock.set_up_clock(clock_handler)
     # Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=10)))
     Alerts.set_up_alerts()
     signal.pause()
