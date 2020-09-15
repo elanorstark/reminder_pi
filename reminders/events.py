@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from RPi import GPIO
 from threading import Lock, Thread
@@ -30,25 +30,33 @@ class Buttons:
 
 
 class Clock:
-    last_time = datetime.now()
+    last_time = datetime.datetime.now()
+    handlers = []
 
     @staticmethod
-    def set_up_clock(handler):
+    def set_up_clock():
         def clock_updater():
             while True:
                 time.sleep(1)
-                now = datetime.now()
+                now = datetime.datetime.now()
                 if Clock.last_time.hour != now.hour or Clock.last_time.minute != now.minute:
                     Clock.last_time = now
                     with _lock:
-                        handler()
+                        for handler in Clock.handlers:
+                            print(handler)
+                            handler()
 
         updater = Thread(target=clock_updater, daemon=True)
         updater.start()
 
+    @staticmethod
+    def add_clock_task(handler):
+        Clock.handlers.append(handler)
+
 
 class Alerts:
     scheduled = []
+    last_updated = datetime.datetime.fromtimestamp(0)
 
     @staticmethod
     def add_to_schedule(task):
@@ -62,9 +70,10 @@ class Alerts:
         def alert_checker():
             alert_tf = False
             while True:
+                print(Alerts.scheduled)
                 time.sleep(5)
                 with _lock:
-                    if len(Alerts.scheduled) > 0 and datetime.now() >= Alerts.scheduled[0].task_time:
+                    if len(Alerts.scheduled) > 0 and datetime.datetime.now() >= Alerts.scheduled[0].task_time:
                         alert_now = Alerts.scheduled.pop(0)
                         alert_tf = True
                 if alert_tf:

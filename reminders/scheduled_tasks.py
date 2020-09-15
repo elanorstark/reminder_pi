@@ -1,14 +1,14 @@
 import os
-from datetime import datetime
+import datetime
 
 from reminders.events import Alerts
 from reminders.menu import AlertMenu, Menu
 
 
 class Task:
-    def __init__(self, name):
+    def __init__(self, name, time=datetime.datetime.fromtimestamp(0)):
         self.name = str(name)
-        self.task_time = datetime.fromtimestamp(0)
+        self.task_time = time
 
     def alert(self):
         os.system("play /home/pi/reminder_pi/assets/sounds/beam_sound.wav &")
@@ -25,7 +25,7 @@ class Task:
 
     def delay(self, delta):
         print("going to delay now")
-        self.task_time = max(self.task_time, datetime.now()) + delta
+        self.task_time = max(self.task_time, datetime.datetime.now()) + delta
         Alerts.add_to_schedule(self)
         print("added back to schedule")
 

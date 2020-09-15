@@ -5,6 +5,7 @@ import datetime
 
 from reminders.events import Buttons, Clock, Alerts
 from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu, TaskMenu
+from reminders.planned_tasks import RepeatTask
 from reminders.screen import Screen
 from reminders.scheduled_tasks import NamedTask
 
@@ -66,10 +67,19 @@ def clock_handler():
     Menu.current().handle_time()
 
 
+def schedule_handler():
+    RepeatTask.set_up_schedule()
+
+
 if __name__ == '__main__':
     setup_menu()
     Buttons.setup_buttons(button_handler)
-    Clock.set_up_clock(clock_handler)
+    RepeatTask.add_task("test 1",
+                        datetime.time(0, 2), [True, True, True, True, True, True, True])
+    schedule_handler()
+    Clock.add_clock_task(clock_handler)
+    Clock.add_clock_task(schedule_handler)
+    Clock.set_up_clock()
     Menu.current().display()
     # Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=10)))
     Alerts.set_up_alerts()
