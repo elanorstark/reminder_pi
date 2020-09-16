@@ -6,6 +6,7 @@ from reminders.events import Buttons
 from reminders.screen import Screen
 
 
+# highest level, things that can be in a list menu
 class ListMenuItem:
     def __init__(self, name):
         self._name = str(name)
@@ -31,6 +32,7 @@ class ActionItem(ListMenuItem):
         self.action()
 
 
+# an action item that is displayed on a menu with a checkbox
 class ToggleableItem(ActionItem):
     def __init__(self, name, is_selected, toggle, pad_width=9):
         super().__init__(name.ljust(pad_width), toggle)
@@ -41,6 +43,7 @@ class ToggleableItem(ActionItem):
         return self._name + ("[×]" if self.is_selected() else "[ ]")
 
 
+# parent for menus that can be displayed as their own screen
 class Menu(ListMenuItem):
     menu_stack = []
 
@@ -73,6 +76,36 @@ class Menu(ListMenuItem):
             Menu.menu_stack.pop()
 
 
+# menu for the home screen
+# no back button available
+class HomeMenu(Menu):
+    translation = Buttons.home_menu_buttons
+
+    def __init__(self, main_menu):
+        super().__init__("Home")
+        self.main_menu = main_menu
+
+    def handle_time(self):
+        self.display()
+
+    def handle_button_press(self, button):
+        button = HomeMenu.translation[button]
+
+        if button == "home":
+            # go to main menu
+            Menu.menu_stack.append(self.main_menu)
+        elif button == "none":
+            # check original design
+            pass
+        elif button == "backlight":
+            Menu.menu_stack.append(BacklightOffMenu())
+
+    def display(self):
+        now = datetime.datetime.now()
+        Screen.home_screen(self.name, now.strftime("%H:%M"), now.strftime("%a %d %b"))
+
+
+# menu that stores and displays a list of ListMenuItem
 class ListMenu(Menu):
     translation = Buttons.list_menu_buttons
 
@@ -126,34 +159,7 @@ class ListMenu(Menu):
         self.position = 0
 
 
-# for the highest level of menus - doesn't allow going back past here
-class HomeMenu(Menu):
-    translation = Buttons.home_menu_buttons
-
-    def __init__(self, main_menu):
-        super().__init__("Home")
-        self.main_menu = main_menu
-
-    def handle_time(self):
-        self.display()
-
-    def handle_button_press(self, button):
-        button = HomeMenu.translation[button]
-
-        if button == "home":
-            # go to main menu
-            Menu.menu_stack.append(self.main_menu)
-        elif button == "none":
-            # check original design
-            pass
-        elif button == "backlight":
-            Menu.menu_stack.append(BacklightOffMenu())
-
-    def display(self):
-        now = datetime.datetime.now()
-        Screen.home_screen(self.name, now.strftime("%H:%M"), now.strftime("%a %d %b"))
-
-
+# menu for reaching the task time editing menu, and to edit on and complete
 class TaskMenu(ListMenu):
 
     def __init__(self, task):
@@ -174,6 +180,7 @@ class TaskMenu(ListMenu):
         return options
 
 
+# menu for editing a task's time
 class TimeMenu(ListMenu):
     units_stages = [1, 5, 10]
     menu_stages = ["Hours", "Minutes", "Save/Cancel"]
@@ -232,6 +239,7 @@ class TimeMenu(ListMenu):
         self.units_stage = 0
 
 
+# menu which is put at top of stack when backlight is turned off
 class BacklightOffMenu(Menu):
     def __init__(self):
         super().__init__("Backlight")
@@ -245,6 +253,7 @@ class BacklightOffMenu(Menu):
             Screen.toggle_backlight()
 
 
+# menu to display alert and delay or mark complete
 class AlertMenu(Menu):
     translation = Buttons.alert_menu_buttons
 
