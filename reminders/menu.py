@@ -163,7 +163,7 @@ class TaskMenu(ListMenu):
 
     def task_options(self):
         options = [
-            TimeMenu(self.task.task_time.strftime("Time     %H:%M")),
+            TimeMenu(self.task),
             ToggleableItem("On", lambda: self.task.on, self.task.on_toggle)
         ]
         if self.task.on:
@@ -171,14 +171,59 @@ class TaskMenu(ListMenu):
         return options
 
 
-class TimeMenu(Menu):
+class TimeMenu(ListMenu):
+    units_stages = [1, 5, 10]
+    menu_stages = ["Hours", "Minutes", "Save/Cancel"]
 
-    def __init__(self, name: str):
-        super().__init__(name)
-        self.time = None
+    def __init__(self, task):
+        super().__init__(task.task_time.strftime("Time     %H:%M"), lambda: [])
+        self.task = task
+        self.time = task.task_time
+        self.menu_stage = 0
+        self.units_stage = 0
 
-    def display(self):
-        Screen.text_screen(self.name + "\n")
+    def display(self, title="Edit Time"):
+        Screen.multi_line_text([[title, 1], ["Unit change: {}".format(TimeMenu.units_stages[self.units_stage]), 0],
+                                [self.time.strftime("%H:%M"), 2], [TimeMenu.menu_stages[self.menu_stage], 1]])
+
+    def change_task_time(self):
+        self.menu_stage = 0
+        self.task.task_time = self.task.task_time.replace(hour=self.time.hour, minute=self.time.minute)
+        self.set_name(self.time.strftime("Time     %H:%M"))
+
+    def hour_change(self, difference):
+        self.time = self.time.replace(hour=(self.time.hour + difference) % 24)
+
+    def minute_change(self, difference):
+        self.time = self.time.replace(minute=(self.time.minute + difference) % 60)
+
+    def handle_button_press(self, button):
+        if button == "a":
+            self.menu_stage += 1
+            self.menu_stage %= len(TimeMenu.menu_stages)
+        if button == "b":
+            if self.menu_stage == 0:
+                self.hour_change(-1)
+            elif self.menu_stage == 1:
+                self.minute_change(0 - TimeMenu.units_stages[self.units_stage])
+            elif self.menu_stage == 2:
+                self.change_task_time()
+                super().handle_button_press("a")
+        if button == "x":
+            self.units_stage += 1
+            self.units_stage %= len(TimeMenu.units_stages)
+        if button == "y":
+            if self.menu_stage == 0:
+                self.hour_change(1)
+            elif self.menu_stage == 1:
+                self.minute_change(TimeMenu.units_stages[self.units_stage])
+            elif self.menu_stage == 2:
+                super().handle_button_press("a")
+
+    def selected(self):
+        super().selected()
+        self.menu_stage = 0
+        self.units_stage = 0
 
 
 class BacklightOffMenu(Menu):
