@@ -7,17 +7,10 @@ from reminders.events import Buttons, Clock, Alerts
 from reminders.menu import HomeMenu, ActionItem, ListMenu, Menu, TaskMenu
 from reminders.planned_tasks import RepeatTask
 from reminders.screen import Screen
-from reminders.scheduled_tasks import NamedTask
+from reminders.scheduled_tasks import RepeatScheduledTask, ScheduledTask
 
 
 def power_off():
-    # requires keyboard input
-    # print("\nSelect y to really poweroff, or n to just exit program")
-    # off = ""
-    # while off != "y":
-    #     off = input("do you want to poweroff? y/n > ")
-    #     if off == "n":
-    #         exit()
     Screen.off()
     time.sleep(0.5)
     os.system("sudo shutdown now")
