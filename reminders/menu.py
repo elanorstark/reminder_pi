@@ -202,22 +202,22 @@ class TimeMenu(ListMenu):
             self.menu_stage += 1
             self.menu_stage %= len(TimeMenu.menu_stages)
         if button == "b":
-            if self.menu_stage == 0:
+            if TimeMenu.menu_stages[self.menu_stage] == "Hours":
                 self.hour_change(-1)
-            elif self.menu_stage == 1:
+            elif TimeMenu.menu_stages[self.menu_stage] == "Minutes":
                 self.minute_change(0 - TimeMenu.units_stages[self.units_stage])
-            elif self.menu_stage == 2:
+            elif TimeMenu.menu_stages[self.menu_stage] == "Save/Cancel":
                 self.change_task_time()
                 super().handle_button_press("a")
         if button == "x":
             self.units_stage += 1
             self.units_stage %= len(TimeMenu.units_stages)
         if button == "y":
-            if self.menu_stage == 0:
+            if TimeMenu.menu_stages[self.menu_stage] == "Hours":
                 self.hour_change(1)
-            elif self.menu_stage == 1:
+            elif TimeMenu.menu_stages[self.menu_stage] == "Minutes":
                 self.minute_change(TimeMenu.units_stages[self.units_stage])
-            elif self.menu_stage == 2:
+            elif TimeMenu.menu_stages[self.menu_stage] == "Save/Cancel":
                 super().handle_button_press("a")
 
     def selected(self):
