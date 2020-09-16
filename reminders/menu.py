@@ -13,6 +13,9 @@ class ListMenuItem:
     def name(self):
         return self._name
 
+    def set_name(self, name):
+        self._name = str(name)
+
     def selected(self):
         pass
 
