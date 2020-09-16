@@ -6,7 +6,7 @@ import time
 
 _lock = Lock()
 
-
+# sets up the buttons and stores which button does what
 class Buttons:
     button_numbers = {5: "a", 6: "b", 16: "x", 24: "y"}
 
@@ -33,6 +33,8 @@ class Buttons:
             GPIO.add_event_detect(pin, GPIO.FALLING, lock_button_handler, bouncetime=300)
 
 
+# contains a function to run in a thread
+# checks the time and calls the handler at each new minute
 class Clock:
     last_time = datetime.datetime.now()
 
@@ -51,6 +53,9 @@ class Clock:
         updater.start()
 
 
+# stores the list of scheduled items that are turned on
+# manages the list to make sure items are unique and the list is in order
+# contains thread to check if it's time for an alert
 class Alerts:
     scheduled = []
     last_updated = datetime.datetime.fromtimestamp(0)
