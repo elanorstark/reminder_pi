@@ -35,7 +35,7 @@ class RepeatTask:
         time_now = datetime.datetime.now()
         midnight_today = time_now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        if Alerts.last_updated < midnight_today:
+        if Alerts.get_last_updated() < midnight_today:
             ScheduledTask.clear_out_today()
             for task in RepeatTask.tasks:
                 if task.task_days[midnight_today.weekday()]:
@@ -44,7 +44,7 @@ class RepeatTask:
                     ScheduledTask.add_to_today(new_task)
                     Alerts.add_to_schedule(new_task)
 
-        Alerts.last_updated = time_now
+        Alerts.set_last_updated(time_now)
 
     @staticmethod
     def load_tasks():

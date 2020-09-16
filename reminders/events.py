@@ -57,24 +57,32 @@ class Clock:
 # manages the list to make sure items are unique and the list is in order
 # contains thread to check if it's time for an alert
 class Alerts:
-    scheduled = []
-    last_updated = datetime.datetime.fromtimestamp(0)
+    _alerts = []
+    _last_updated = datetime.datetime.fromtimestamp(0)
+
+    @staticmethod
+    def get_last_updated():
+        return Alerts._last_updated
+
+    @staticmethod
+    def set_last_updated(last_updated):
+        _last_updated = last_updated
 
     @staticmethod
     def print_schedule():
-        print("scheduled:", [each.name + " " + str(each.task_time) for each in Alerts.scheduled])
+        print("scheduled:", [each.name + " " + str(each.task_time) for each in Alerts._alerts])
 
     @staticmethod
     def add_to_schedule(task):
-        if task not in Alerts.scheduled:
-            Alerts.scheduled.append(task)
-            Alerts.scheduled.sort(key=lambda x: x.task_time)
+        if task not in Alerts._alerts:
+            Alerts._alerts.append(task)
+            Alerts._alerts.sort(key=lambda x: x.task_time)
         Alerts.print_schedule()
 
     @staticmethod
     def remove_from_schedule(task):
-        if task in Alerts.scheduled:
-            Alerts.scheduled.remove(task)
+        if task in Alerts._alerts:
+            Alerts._alerts.remove(task)
         Alerts.print_schedule()
 
     @staticmethod
@@ -84,8 +92,8 @@ class Alerts:
             while True:
                 time.sleep(5)
                 with _lock:
-                    if len(Alerts.scheduled) > 0 and datetime.datetime.now() >= Alerts.scheduled[0].task_time:
-                        alert_now = Alerts.scheduled.pop(0)
+                    if len(Alerts._alerts) > 0 and datetime.datetime.now() >= Alerts._alerts[0].task_time:
+                        alert_now = Alerts._alerts.pop(0)
                         alert_tf = True
                 if alert_tf:
                     alert_tf = False
