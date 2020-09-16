@@ -21,9 +21,9 @@ class Buttons:
     @staticmethod
     def setup_buttons(handler):
         # stop multiple button handlers being called at once
-        def lock_button_handler(pin):
+        def lock_button_handler(gpio_pin):
             with _lock:
-                handler(Buttons.button_numbers[pin])
+                handler(Buttons.button_numbers[gpio_pin])
 
         # BCM numbering scheme
 
@@ -71,13 +71,13 @@ class Alerts:
 
     @staticmethod
     def print_schedule():
-        print("scheduled:", [each.name + " " + str(each.task_time) for each in Alerts._alerts])
+        print("scheduled:", [each.name + " " + str(each.get_task_time()) for each in Alerts._alerts])
 
     @staticmethod
     def add_to_schedule(task):
         if task not in Alerts._alerts:
             Alerts._alerts.append(task)
-            Alerts._alerts.sort(key=lambda x: x.task_time)
+            Alerts._alerts.sort(key=lambda x: x.get_task_time())
         Alerts.print_schedule()
 
     @staticmethod
@@ -93,7 +93,7 @@ class Alerts:
             while True:
                 time.sleep(5)
                 with _lock:
-                    if len(Alerts._alerts) > 0 and datetime.datetime.now() >= Alerts._alerts[0].task_time:
+                    if len(Alerts._alerts) > 0 and datetime.datetime.now() >= Alerts._alerts[0].get_task_time():
                         alert_now = Alerts._alerts.pop(0)
                         alert_tf = True
                 if alert_tf:
@@ -105,5 +105,5 @@ class Alerts:
 
     @staticmethod
     def sort_alerts():
-        Alerts._alerts.sort(key=lambda x: x.task_time)
+        Alerts._alerts.sort(key=lambda x: x.get_task_time())
         Alerts.print_schedule()

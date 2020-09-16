@@ -10,7 +10,7 @@ class ScheduledTask:
 
     def __init__(self, name, time, parent_task=None):
         self.name = str(name)
-        self.task_time = time
+        self._task_time = time
         self.parent_task = parent_task
         self.on = True
         self.complete = False
@@ -30,7 +30,7 @@ class ScheduledTask:
 
     def delay(self, delta):
         if not self.complete:
-            self.task_time = max(self.task_time, datetime.datetime.now()) + delta
+            self._task_time = max(self._task_time, datetime.datetime.now()) + delta
             Alerts.add_to_schedule(self)
 
     def on_toggle(self):
@@ -39,11 +39,17 @@ class ScheduledTask:
     def complete_toggle(self):
         pass
 
+    def get_task_time(self):
+        return self._task_time
+
+    def set_task_time(self, task_time):
+        self._task_time = task_time
+
     @staticmethod
     def add_to_today(task):
         if task not in ScheduledTask.today:
             ScheduledTask.today.append(task)
-            ScheduledTask.today.sort(key=lambda x: x.task_time)
+            ScheduledTask.today.sort(key=lambda x: x.get_task_time())
 
     @staticmethod
     def clear_out_today():
@@ -77,6 +83,13 @@ class RepeatScheduledTask(ScheduledTask):
         if not self.complete and self.on:
             print("add to")
             Alerts.add_to_schedule(self)
+
+    def get_task_time(self):
+        self._task_time = self._task_time.replace(second=0, microsecond=0)
+        return self._task_time
+
+    def set_task_time(self, task_time):
+        self._task_time = task_time.replace(second=0, microsecond=0)
 
 
 class CountdownTimer(ScheduledTask):

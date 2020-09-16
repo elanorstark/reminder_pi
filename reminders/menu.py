@@ -187,9 +187,9 @@ class TimeMenu(ListMenu):
     translation = Buttons.time_menu_buttons
 
     def __init__(self, task):
-        super().__init__(task.task_time.strftime("Time     %H:%M"), lambda: [])
+        super().__init__(task.get_task_time().strftime("Time     %H:%M"), lambda: [])
         self.task = task
-        self.time = task.task_time
+        self.time = task.get_task_time()
         self.menu_stage = 0
         self.units_stage = 0
 
@@ -199,7 +199,7 @@ class TimeMenu(ListMenu):
 
     def change_task_time(self):
         self.menu_stage = 0
-        self.task.task_time = self.task.task_time.replace(hour=self.time.hour, minute=self.time.minute)
+        self.task.set_task_time(self.task.get_task_time().replace(hour=self.time.hour, minute=self.time.minute))
         self.set_name(self.time.strftime("Time     %H:%M"))
         Alerts.sort_alerts()
 
@@ -266,10 +266,12 @@ class AlertMenu(Menu):
 
     def display(self):
         if self.delayed_for > 0:
-            Screen.multi_line_text([[self.name, 1], ["Delaying until:", 0], [self.task.task_time.strftime("%H:%M"), 1],
-                                    [" ", 0], ["Delayed for", 0], [str(self.delayed_for * self.delay_period), 0]])
+            Screen.multi_line_text(
+                [[self.name, 1], ["Delaying until:", 0], [self.task.get_task_time().strftime("%H:%M"), 1],
+                 [" ", 0], ["Delayed for", 0], [str(self.delayed_for * self.delay_period), 0]])
         else:
-            Screen.multi_line_text([[self.name, 1], ["Alert time:", 0], [self.task.task_time.strftime("%H:%M"), 1]])
+            Screen.multi_line_text(
+                [[self.name, 1], ["Alert time:", 0], [self.task.get_task_time().strftime("%H:%M"), 1]])
 
     def handle_button_press(self, button):
         button = AlertMenu.translation[button]
