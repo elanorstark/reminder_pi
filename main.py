@@ -36,7 +36,7 @@ def setup_menu():
     exit_item = ActionItem("exit", exit_program)
 
     def schedule():
-        return [TaskMenu(x) for x in Alerts.scheduled]
+        return [TaskMenu(x) for x in ScheduledTask.today]
 
     schedule_item = ListMenu("Schedule", schedule)
     vegetable = ListMenu("vegetable", lambda: [pea, carrot])

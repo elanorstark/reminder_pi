@@ -5,7 +5,9 @@ from reminders.events import Alerts
 from reminders.menu import AlertMenu, Menu
 
 
-class Task:
+class ScheduledTask:
+    today = []
+
     def __init__(self, name, time, parent_task=None):
         self.name = str(name)
         self.task_time = time
@@ -37,8 +39,20 @@ class Task:
     def complete_toggle(self):
         pass
 
+    @staticmethod
+    def add_to_today(task):
+        if task not in ScheduledTask.today:
+            ScheduledTask.today.append(task)
+            ScheduledTask.today.sort(key=lambda x: x.task_time)
 
-class NamedTask(Task):
+    @staticmethod
+    def clear_out_today():
+        for each in ScheduledTask.today:
+            if isinstance(each, RepeatScheduledTask):
+                ScheduledTask.today.remove(each)
+
+
+class RepeatScheduledTask(ScheduledTask):
     def __init__(self, name, task_time, parent_task=None):
         super().__init__(name, task_time, parent_task)
         self.on = True
@@ -51,7 +65,7 @@ class NamedTask(Task):
             print("remove from schedule")
             Alerts.remove_from_schedule(self)
             self.complete = False
-        if self.on:
+        if self.on and not self.complete:
             print("add to")
             Alerts.add_to_schedule(self)
 
@@ -61,9 +75,10 @@ class NamedTask(Task):
             print("remove from")
             Alerts.remove_from_schedule(self)
         if not self.complete and self.on:
+            print("add to")
             Alerts.add_to_schedule(self)
 
 
-class CountdownTimer(Task):
+class CountdownTimer(ScheduledTask):
     def __init__(self, task_time):
         super().__init__("Countdown Timer", task_time)

@@ -27,7 +27,7 @@ class ActionItem(ListMenuItem):
         self.action()
 
 
-class SelectableItem(ActionItem):
+class ToggleableItem(ActionItem):
     def __init__(self, name, is_selected, toggle, pad_width=9):
         super().__init__(name.ljust(pad_width), toggle)
         self.is_selected = is_selected
@@ -152,16 +152,20 @@ class TaskMenu(ListMenu):
 
     def __init__(self, task):
         self.task = task
-        options = [
-            SelectableItem("On", lambda: self.task.on, self.task.on_toggle),
-            SelectableItem("Complete", lambda: self.task.complete, self.task.complete_toggle),
-            TimeMenu(self.task.task_time.strftime("Time     %H:%M"))
-        ]
-        super().__init__(self.task.name, lambda: options)
+        super().__init__(self.task.name, self.task_options)
 
     def display(self, title=None):
         title = "Edit " + self.name
         super(TaskMenu, self).display(title)
+
+    def task_options(self):
+        options = [
+            TimeMenu(self.task.task_time.strftime("Time     %H:%M")),
+            ToggleableItem("On", lambda: self.task.on, self.task.on_toggle)
+        ]
+        if self.task.on:
+            options.append(ToggleableItem("Complete", lambda: self.task.complete, self.task.complete_toggle))
+        return options
 
 
 class TimeMenu(Menu):
