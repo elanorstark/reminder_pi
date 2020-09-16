@@ -66,7 +66,7 @@ class Alerts:
 
     @staticmethod
     def set_last_updated(last_updated):
-        _last_updated = last_updated
+        Alerts._last_updated = last_updated
 
     @staticmethod
     def print_schedule():
