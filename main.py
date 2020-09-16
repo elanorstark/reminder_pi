@@ -24,13 +24,6 @@ def exit_program():
 
 # example of a menu with sub-menus and actions
 def setup_menu():
-    def carrot():
-        Screen.text_screen("carrot")
-        os.system("play /home/pi/reminder_pi/assets/sounds/beam_sound.wav &")
-        time.sleep(3)
-
-    carrot = ActionItem("carrot", carrot)
-    pea = ActionItem("pea", lambda: print("here is a pea"))
 
     shutdown = ActionItem("shutdown", power_off)
     exit_item = ActionItem("exit", exit_program)
@@ -39,9 +32,8 @@ def setup_menu():
         return [TaskMenu(x) for x in ScheduledTask.today]
 
     schedule_item = ListMenu("Schedule", schedule)
-    vegetable = ListMenu("vegetable", lambda: [pea, carrot])
 
-    top_level = ListMenu("Main Menu", lambda: [schedule_item, vegetable, exit_item, shutdown])
+    top_level = ListMenu("Main Menu", lambda: [schedule_item, exit_item, shutdown])
     Menu.initialise(HomeMenu(top_level))
 
 
