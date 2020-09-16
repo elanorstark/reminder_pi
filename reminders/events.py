@@ -6,6 +6,7 @@ import time
 
 _lock = Lock()
 
+
 # sets up the buttons and stores which button does what
 class Buttons:
     button_numbers = {5: "a", 6: "b", 16: "x", 24: "y"}
@@ -101,3 +102,8 @@ class Alerts:
 
         updater = Thread(target=alert_checker(), daemon=True)
         updater.start()
+
+    @staticmethod
+    def sort_alerts():
+        Alerts._alerts.sort(key=lambda x: x.task_time)
+        Alerts.print_schedule()

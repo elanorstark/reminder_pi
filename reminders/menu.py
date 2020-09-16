@@ -2,7 +2,7 @@ import datetime
 
 from typing import List
 
-from reminders.events import Buttons
+from reminders.events import Buttons, Alerts
 from reminders.screen import Screen
 
 
@@ -201,6 +201,7 @@ class TimeMenu(ListMenu):
         self.menu_stage = 0
         self.task.task_time = self.task.task_time.replace(hour=self.time.hour, minute=self.time.minute)
         self.set_name(self.time.strftime("Time     %H:%M"))
+        Alerts.sort_alerts()
 
     def hour_change(self, difference):
         self.time = self.time.replace(hour=(self.time.hour + difference) % 24)
