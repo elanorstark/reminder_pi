@@ -96,6 +96,7 @@ class Screen:
     @staticmethod
     def multi_line_text(lines=None, start_xy=(0, 0), align="top"):
         for i in range(len(lines)):
+            lines[i][0] = str(lines[i][0])
             lines[i][1] = int(round(lines[i][1], 0))
             if lines[i][1] > max(FONT_SIZE_ALIASES):
                 lines[i][1] = max(FONT_SIZE_ALIASES)
