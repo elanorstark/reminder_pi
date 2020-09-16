@@ -8,24 +8,28 @@ _lock = Lock()
 
 
 class Buttons:
+    button_numbers = {5: "a", 6: "b", 16: "x", 24: "y"}
+
+    home_menu_buttons = {"a": "home", "b": "none", "y": "none", "x": "backlight"}
+    list_menu_buttons = {"a": "select", "b": "up", "y": "down", "x": "home"}
+    time_menu_buttons = {"a": "next", "b": "decrease", "y": "increase", "x": "units"}
+    alert_menu_buttons = {"a": "dismiss", "b": "complete", "y": "none", "x": "delay"}
 
     # sets up buttons with handler provided
     # handler is a function taking the letter of the button pressed
     @staticmethod
     def setup_buttons(handler):
-        BUTTONS = {5: "a", 6: "b", 16: "x", 24: "y"}
-
         # stop multiple button handlers being called at once
         def lock_button_handler(pin):
             with _lock:
-                handler(BUTTONS[pin])
+                handler(Buttons.button_numbers[pin])
 
         # BCM numbering scheme
 
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(list(BUTTONS.keys()), GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(list(Buttons.button_numbers.keys()), GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        for pin in BUTTONS:
+        for pin in Buttons.button_numbers:
             GPIO.add_event_detect(pin, GPIO.FALLING, lock_button_handler, bouncetime=300)
 
 

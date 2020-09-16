@@ -2,6 +2,7 @@ import datetime
 
 from typing import List
 
+from reminders.events import Buttons
 from reminders.screen import Screen
 
 
@@ -49,8 +50,6 @@ class Menu(ListMenuItem):
     def display(self):
         Screen.text_screen(self.name + "\n" + "-" * len(self.name))
 
-    # decides what to do depending on which button was pressed
-    # a = select, b = up menu, y = down menu, x = home screen
     def handle_button_press(self, button):
         pass
 
@@ -75,6 +74,8 @@ class Menu(ListMenuItem):
 
 
 class ListMenu(Menu):
+    translation = Buttons.list_menu_buttons
+
     # initialise a MenuList
     def __init__(self, name: str, items):
         super().__init__(name)
@@ -85,18 +86,20 @@ class ListMenu(Menu):
     # decides what to do depending on which button was pressed
     # a = select, b = up menu, y = down menu, x = home screen
     def handle_button_press(self, button):
-        if button == "a":
+        button = ListMenu.translation[button]
+
+        if button == "select":
             # select
             self.items[self.position].selected()
-        elif button == "b":
+        elif button == "up":
             # up
             self.position -= 1
             self.position %= len(self.items)
-        elif button == "y":
+        elif button == "down":
             # down
             self.position += 1
             self.position %= len(self.items)
-        elif button == "x":
+        elif button == "home":
             # home/toplevel button
             Menu.menu_stack = Menu.menu_stack[:1]
 
@@ -125,6 +128,7 @@ class ListMenu(Menu):
 
 # for the highest level of menus - doesn't allow going back past here
 class HomeMenu(Menu):
+    translation = Buttons.home_menu_buttons
 
     def __init__(self, main_menu):
         super().__init__("Home")
@@ -134,16 +138,15 @@ class HomeMenu(Menu):
         self.display()
 
     def handle_button_press(self, button):
-        if button == "a":
+        button = HomeMenu.translation[button]
+
+        if button == "home":
             # go to main menu
             Menu.menu_stack.append(self.main_menu)
-        elif button == "b":
+        elif button == "none":
             # check original design
             pass
-        elif button == "y":
-            # check original design
-            pass
-        elif button == "x":
+        elif button == "backlight":
             Menu.menu_stack.append(BacklightOffMenu())
 
     def display(self):
@@ -174,6 +177,7 @@ class TaskMenu(ListMenu):
 class TimeMenu(ListMenu):
     units_stages = [1, 5, 10]
     menu_stages = ["Hours", "Minutes", "Save/Cancel"]
+    translation = Buttons.time_menu_buttons
 
     def __init__(self, task):
         super().__init__(task.task_time.strftime("Time     %H:%M"), lambda: [])
@@ -198,10 +202,12 @@ class TimeMenu(ListMenu):
         self.time = self.time.replace(minute=(self.time.minute + difference) % 60)
 
     def handle_button_press(self, button):
-        if button == "a":
+        button = TimeMenu.translation[button]
+
+        if button == "next":
             self.menu_stage += 1
             self.menu_stage %= len(TimeMenu.menu_stages)
-        if button == "b":
+        if button == "decrease":
             if TimeMenu.menu_stages[self.menu_stage] == "Hours":
                 self.hour_change(-1)
             elif TimeMenu.menu_stages[self.menu_stage] == "Minutes":
@@ -209,10 +215,10 @@ class TimeMenu(ListMenu):
             elif TimeMenu.menu_stages[self.menu_stage] == "Save/Cancel":
                 self.change_task_time()
                 super().handle_button_press("a")
-        if button == "x":
+        if button == "units":
             self.units_stage += 1
             self.units_stage %= len(TimeMenu.units_stages)
-        if button == "y":
+        if button == "increase":
             if TimeMenu.menu_stages[self.menu_stage] == "Hours":
                 self.hour_change(1)
             elif TimeMenu.menu_stages[self.menu_stage] == "Minutes":
@@ -240,6 +246,8 @@ class BacklightOffMenu(Menu):
 
 
 class AlertMenu(Menu):
+    translation = Buttons.alert_menu_buttons
+
     def __init__(self, task):
         super().__init__(task.name)
         self.task = task
@@ -254,11 +262,13 @@ class AlertMenu(Menu):
             Screen.multi_line_text([[self.name, 1], ["Alert time:", 0], [self.task.task_time.strftime("%H:%M"), 1]])
 
     def handle_button_press(self, button):
-        if button == "a":
+        button = AlertMenu.translation[button]
+
+        if button == "dismiss":
             Menu.menu_stack.pop()
-        elif button == "y":
+        elif button == "delay":
             self.task.delay(self.delay_period)
             self.delayed_for += 1
             self.display()
-        elif button == "b":
+        elif button == "complete":
             self.task.complete_toggle()
