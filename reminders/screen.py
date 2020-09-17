@@ -27,6 +27,16 @@ class Screen:
 
     backlight_status = True
 
+    class TooMuchText(Exception):
+        pass
+
+    class TextLine:
+        def __init__(self, text, size=0, align="l", uniform_y=False):
+            self.text = text
+            self.size = size
+            self.align = align
+            self.uniform_y = uniform_y
+
     # prepares black rectangle to be drawn on screen
     @staticmethod
     def clear():
@@ -73,48 +83,64 @@ class Screen:
     @staticmethod
     def home_screen(top_text, time_formatted, date_formatted):
         Screen.clear()
-        # epsilon_x = random.randint(-4, 4)
+
+        # slightly moves the home screen text to reduce burn-in
+        # (not sure how susceptible screen is to burn-in)
         epsilon_x = sum(map(ord, time_formatted)) % 9 - 4
         epsilon_y = sum(map(ord, date_formatted + time_formatted)) % 9 - 4
-        Screen.draw_text(top_text, position=(10 + epsilon_x, 10 + epsilon_y),
-                         font=FONT_L)
-        Screen.draw_text(time_formatted, position=(25 + epsilon_x, 70 + epsilon_y),
-                         font=FONT_XL)
+
+        Screen.draw_text(top_text, position=(10 + epsilon_x, 10 + epsilon_y), font=FONT_L)
+        Screen.draw_text(time_formatted, position=(25 + epsilon_x, 70 + epsilon_y), font=FONT_XL)
         Screen.draw_text(date_formatted, position=(50 + epsilon_x, 140 + epsilon_y))
+
         Screen.update_screen()
 
     @staticmethod
     def menu_screen(top_text, main_text):
         Screen.clear()
         top_x, top_y = Screen.draw.textsize(top_text, FONT_L)
-        # main_x, main_y = Screen.draw.textsize("> ", FONT)
         Screen.draw_text(top_text, position=(10, 10),
                          font=FONT_L)
         Screen.draw_text(main_text, position=(10, 20 + top_y))
         Screen.update_screen()
 
+    # changes any invalid font sizes to the closest valid font size
+    @staticmethod
+    def fix_font_sizes(lines):
+        for i in range(len(lines)):
+            lines[i].text = str(lines[i].text)
+            lines[i].size = int(round(lines[i].size, 0))
+            if lines[i].size > max(FONT_SIZE_ALIASES):
+                lines[i].size = max(FONT_SIZE_ALIASES)
+            elif lines[i].size < min(FONT_SIZE_ALIASES):
+                lines[i].size = min(FONT_SIZE_ALIASES)
+
+    @staticmethod
+    def uniform_y_size(text_line):
+        return Screen.draw.textsize("(", text_line.size)[1]
+
     @staticmethod
     def multi_line_text(lines=None, start_xy=(0, 0), align="top"):
-        for i in range(len(lines)):
-            lines[i][0] = str(lines[i][0])
-            lines[i][1] = int(round(lines[i][1], 0))
-            if lines[i][1] > max(FONT_SIZE_ALIASES):
-                lines[i][1] = max(FONT_SIZE_ALIASES)
-            elif lines[i][1] < min(FONT_SIZE_ALIASES):
-                lines[i][1] = min(FONT_SIZE_ALIASES)
+        Screen.fix_font_sizes(lines)
 
         Screen.clear()
         x, y = start_xy
         i = 0
         while i < len(lines):
-            if Screen.draw.textsize(lines[i][0], FONT_SIZE_ALIASES[lines[i][1]])[0] > Screen.disp.width:
-                lines.insert(i + 1, [lines[i][0][-1], lines[i][1]])
-                lines[i][0] = lines[i][0][0:-1]
-                while Screen.draw.textsize(lines[i][0], FONT_SIZE_ALIASES[lines[i][1]])[0] > Screen.disp.width:
-                    lines[i + 1][0] = lines[i][0][-1] + lines[i + 1][0]
-                    lines[i][0] = lines[i][0][0:-1]
+            if Screen.draw.textsize(lines[i].text, FONT_SIZE_ALIASES[lines[i].size])[0] > Screen.disp.width:
+                lines.insert(i + 1, Screen.TextLine(lines[i].text[-1], size=lines[i].size, align=lines[i].align,
+                                                    uniform_y=lines[i].uniform_y))
+                lines[i].text = lines[i].text[0:-1]
+
+                while Screen.draw.textsize(lines[i].text, FONT_SIZE_ALIASES[lines[i].size])[0] > Screen.disp.width:
+                    lines[i + 1].text = lines[i].text[-1] + lines[i + 1].text
+                    lines[i].text = lines[i].text[0:-1]
                     if len(lines) == 1:
                         break
-            y += Screen.draw_text(lines[i][0], (x, y), FONT_SIZE_ALIASES[lines[i][1]])[1]
+
+            Screen.draw_text(lines[i].text, (x, y), FONT_SIZE_ALIASES[lines[i].size])
+            y += Screen.uniform_y_size(lines[i])
             i += 1
+            if y > Screen.disp.height:
+                raise Screen.TooMuchText
         Screen.update_screen()
