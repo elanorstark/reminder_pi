@@ -94,9 +94,6 @@ class HomeMenu(Menu):
         if button == "home":
             # go to main menu
             Menu.menu_stack.append(self.main_menu)
-        elif button == "none":
-            # check original design
-            pass
         elif button == "backlight":
             Menu.menu_stack.append(BacklightOffMenu())
 
@@ -261,11 +258,11 @@ class BacklightOffMenu(Menu):
 class AlertMenu(Menu):
     translation = Buttons.alert_menu_buttons
 
-    def __init__(self, task):
+    def __init__(self, task, delay=datetime.timedelta(minutes=1)):
         super().__init__(task.name)
         self.task = task
         self.delayed_for = 0
-        self.delay_period = datetime.timedelta(seconds=10)
+        self.delay_period = delay
 
     def display(self):
         if self.delayed_for > 0:

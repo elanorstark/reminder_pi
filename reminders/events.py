@@ -14,7 +14,7 @@ class Buttons:
     home_menu_buttons = {"a": "home", "b": "none", "y": "none", "x": "backlight"}
     list_menu_buttons = {"a": "select", "b": "up", "y": "down", "x": "home"}
     time_menu_buttons = {"a": "next", "b": "decrease", "y": "increase", "x": "units"}
-    alert_menu_buttons = {"a": "dismiss", "b": "complete", "y": "none", "x": "delay"}
+    alert_menu_buttons = {"a": "dismiss", "b": "complete", "x": "none", "y": "delay"}
 
     # sets up buttons with handler provided
     # handler is a function taking the letter of the button pressed
