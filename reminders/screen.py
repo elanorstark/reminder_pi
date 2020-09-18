@@ -32,9 +32,11 @@ class Screen:
 
     class TextLine:
         def __init__(self, text, size=0, align="l", uniform_y=False):
+            if (str(align).upper()) not in ["l", "c", "r"]:
+                align = "l"
             self.text = text
             self.size = size
-            self.align = align
+            self.align = str(align).lower()
             self.uniform_y = uniform_y
 
     # prepares black rectangle to be drawn on screen
@@ -77,7 +79,7 @@ class Screen:
     @staticmethod
     def text_screen(text="Initial\nScreen"):
         Screen.clear()
-        Screen.draw_text(text)
+        Screen.draw_text(text).replace(" \n", "\n").replace("\n ", "\n").replace("\n", " ")
         Screen.update_screen()
 
     @staticmethod
@@ -117,10 +119,29 @@ class Screen:
 
     @staticmethod
     def uniform_y_size(text_line):
-        return Screen.draw.textsize("(", text_line.size)[1]
+        return Screen.draw.textsize("(", FONT_SIZE_ALIASES[text_line.size])[1]
 
     @staticmethod
-    def multi_line_text(lines=None, start_xy=(0, 0), align="top"):
+    def centre_x_position(text_line):
+        x, _ = Screen.draw.textsize(text_line.text, FONT_SIZE_ALIASES[text_line.size])
+        return (Screen.disp.width - x) / 2
+
+    @staticmethod
+    def right_x_position(text_line):
+        x, _ = Screen.draw.textsize(text_line.text, FONT_SIZE_ALIASES[text_line.size])
+        return Screen.disp.width - x
+
+    @staticmethod
+    def choose_x_position(text_line):
+        if text_line.align == "l":
+            return 0
+        elif text_line.align == "c":
+            return Screen.centre_x_position(text_line)
+        elif text_line.align == "r":
+            return Screen.right_x_position(text_line)
+
+    @staticmethod
+    def multi_line_text(lines=None, start_xy=(0, 0)):
         Screen.fix_font_sizes(lines)
 
         Screen.clear()
@@ -138,6 +159,7 @@ class Screen:
                     if len(lines) == 1:
                         break
 
+            x = Screen.choose_x_position(lines[i])
             Screen.draw_text(lines[i].text, (x, y), FONT_SIZE_ALIASES[lines[i].size])
             y += Screen.uniform_y_size(lines[i])
             i += 1
