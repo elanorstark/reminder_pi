@@ -32,7 +32,7 @@ class Screen:
 
     class TextLine:
         def __init__(self, text, size=0, align="l", uniform_y=False):
-            align = str(align).lower()
+            align = str(align).lower()[0]
             if align not in ["l", "c", "r"]:
                 align = "l"
             self.text = text

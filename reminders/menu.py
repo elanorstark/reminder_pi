@@ -195,7 +195,7 @@ class TimeMenu(ListMenu):
             [Screen.TextLine(title, 1),
              Screen.TextLine("Unit change: {}".format(TimeMenu.units_stages[self.units_stage]), 0),
              Screen.TextLine(self.time.strftime("%H:%M"), 2, align="c"),
-             Screen.TextLine(TimeMenu.menu_stages[self.menu_stage], 1)])
+             Screen.TextLine(TimeMenu.menu_stages[self.menu_stage], 1, align="c")])
 
     def change_task_time(self):
         self.menu_stage = 0
@@ -267,13 +267,13 @@ class AlertMenu(Menu):
     def display(self):
         if self.delayed_for > 0:
             Screen.multi_line_text(
-                [Screen.TextLine(self.name, 1), Screen.TextLine("Delaying until:", 0),
+                [Screen.TextLine(self.name, 1), Screen.TextLine("Delaying until:", 0, uniform_y=True),
                  Screen.TextLine(self.task.get_task_time().strftime("%H:%M"), 1),
                  Screen.TextLine(" ", 0), Screen.TextLine("Delayed for", 0),
                  Screen.TextLine(str(self.delayed_for * self.delay_period), 0)])
         else:
             Screen.multi_line_text(
-                [Screen.TextLine(self.name, 1), Screen.TextLine("Alert time:", 0),
+                [Screen.TextLine(self.name, 1), Screen.TextLine("Alert time:", 0, uniform_y=True),
                  Screen.TextLine(self.task.get_task_time().strftime("%H:%M"), 1)])
 
     def handle_button_press(self, button):
