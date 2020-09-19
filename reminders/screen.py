@@ -32,11 +32,12 @@ class Screen:
 
     class TextLine:
         def __init__(self, text, size=0, align="l", uniform_y=False):
-            if (str(align).upper()) not in ["l", "c", "r"]:
+            align = str(align).lower()
+            if align not in ["l", "c", "r"]:
                 align = "l"
             self.text = text
             self.size = size
-            self.align = str(align).lower()
+            self.align = align
             self.uniform_y = uniform_y
 
     # prepares black rectangle to be drawn on screen
@@ -133,12 +134,12 @@ class Screen:
 
     @staticmethod
     def choose_x_position(text_line):
-        if text_line.align == "l":
-            return 0
-        elif text_line.align == "c":
+        if text_line.align == "c":
             return Screen.centre_x_position(text_line)
         elif text_line.align == "r":
             return Screen.right_x_position(text_line)
+        else:
+            return 0
 
     @staticmethod
     def multi_line_text(lines=None, start_xy=(0, 0)):

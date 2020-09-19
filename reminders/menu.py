@@ -194,7 +194,7 @@ class TimeMenu(ListMenu):
         Screen.multi_line_text(
             [Screen.TextLine(title, 1),
              Screen.TextLine("Unit change: {}".format(TimeMenu.units_stages[self.units_stage]), 0),
-             Screen.TextLine(self.time.strftime("%H:%M"), 2),
+             Screen.TextLine(self.time.strftime("%H:%M"), 2, align="c"),
              Screen.TextLine(TimeMenu.menu_stages[self.menu_stage], 1)])
 
     def change_task_time(self):
