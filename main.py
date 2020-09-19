@@ -20,7 +20,7 @@ def create_log():
 
 def opening_data():
     RepeatTask.load_tasks()
-    ScheduledTask.read_in_today()
+    ScheduledTask.set_up_today()
 
 
 def saving_data():
@@ -63,7 +63,7 @@ def button_handler(button):
 
 def clock_handler():
     Menu.current().handle_time()
-    RepeatTask.set_up_schedule()
+    ScheduledTask.update_schedule()
 
 
 if __name__ == '__main__':
@@ -76,7 +76,6 @@ if __name__ == '__main__':
     #                     datetime.time(0, 2), [True, True, True, True, True, True, True])
     # RepeatTask.add_task("test 2",
     #                     datetime.time(0, 3), [True, True, True, True, True, True, True])
-    RepeatTask.set_up_schedule()
     Clock.set_up_clock(clock_handler)
     # Alerts.add_to_schedule(NamedTask("test task", datetime.datetime.now() + datetime.timedelta(seconds=10)))
     Alerts.set_up_alerts()

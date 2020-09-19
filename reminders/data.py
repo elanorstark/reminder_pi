@@ -12,7 +12,7 @@ class DataIO:
             to_save = dict((k, all_properties[k]) for k in ("name", "_task_time", "on", "complete"))
             time = to_save["_task_time"]
             time_list = [time.year, time.month, time.day, time.hour, time.minute, time.second, time.microsecond]
-            to_save["_task_time"] = [time_list]
+            to_save["_task_time"] = time_list
             today_json.append(to_save)
 
         log = {"tasks": today_json, "date": [date.year, date.month, date.day]}

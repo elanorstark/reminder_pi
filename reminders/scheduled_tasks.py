@@ -4,17 +4,19 @@ import datetime
 from reminders.data import DataIO
 from reminders.events import Alerts
 from reminders.menu import AlertMenu, Menu
+from reminders.planned_tasks import RepeatTask
 
 
 class ScheduledTask:
     today = []
+    last_updated = datetime.datetime.fromtimestamp(0)
 
-    def __init__(self, name, time, parent_task=None):
+    def __init__(self, name, time, on=True, complete=False, parent_task=None):
         self.name = str(name)
         self._task_time = time
         self.parent_task = parent_task
-        self.on = True
-        self.complete = False
+        self.on = on
+        self.complete = complete
 
     def alert(self):
         os.system("play /home/pi/reminder_pi/assets/sounds/beam_sound.wav > /dev/null 2>&1 &")
@@ -64,13 +66,58 @@ class ScheduledTask:
                                datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))
 
     @staticmethod
-    def read_in_today():
-        today, date = DataIO.read_in_today()
-        if date == datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
-            ScheduledTask.today = today
+    def add_to_history(today, date):
+        DataIO.add_local_history(today, date)
+
+    @staticmethod
+    def set_up_today():
+        update_start = datetime.datetime.now()
+
+        ScheduledTask.clear_out_today()
+
+        tasks_log, date_log = DataIO.read_in_today()
+        date_today = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        if (date_today.day, date_today.month, date_today.year) == (date_log.day, date_log.month, date_log.year):
+            print(date_log, tasks_log)
+            for task in tasks_log:
+                t = task["_task_time"]
+                task_time = datetime.datetime(year=t[0], month=t[1], day=t[2], hour=t[3], minute=t[4])
+                ScheduledTask.today.append(
+                    ScheduledTask(task["name"], task_time, on=task["on"], complete=task["complete"]))
+            ScheduledTask.last_updated = date_log
+
         else:
-            if today:
-                DataIO.add_local_history(today, date)
+            print("OLD LOG", date_log, datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))
+            if tasks_log:
+                ScheduledTask.add_to_history(tasks_log, date_log)
+            ScheduledTask.today_from_daily_tasks()
+
+        for task in ScheduledTask.today:
+            if task.on and not task.complete:
+                Alerts.add_to_schedule(task)
+
+        ScheduledTask.last_updated = update_start
+
+    @staticmethod
+    def today_from_daily_tasks():
+        time_now = datetime.datetime.now()
+        midnight_today = time_now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        for task in RepeatTask.tasks:
+            if task.task_days[midnight_today.weekday()]:
+                scheduled_time = midnight_today.replace(hour=task.task_time.hour, minute=task.task_time.minute)
+                new_task = RepeatScheduledTask(task.name, scheduled_time, parent_task=task)
+                ScheduledTask.add_to_today(new_task)
+
+    @staticmethod
+    def update_schedule():
+        print("CHECKING UPDATE", ScheduledTask.last_updated)
+        time_now = datetime.datetime.now()
+        midnight_today = time_now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        if ScheduledTask.last_updated < midnight_today:
+            print("needs updating!!!!!!!!", ScheduledTask.last_updated, midnight_today)
+            ScheduledTask.set_up_today()
 
 
 class RepeatScheduledTask(ScheduledTask):
