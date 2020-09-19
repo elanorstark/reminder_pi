@@ -120,7 +120,10 @@ class Screen:
 
     @staticmethod
     def uniform_y_size(text_line):
-        return Screen.draw.textsize("(", FONT_SIZE_ALIASES[text_line.size])[1]
+        if text_line.uniform_y:
+            return Screen.draw.textsize("(", FONT_SIZE_ALIASES[text_line.size])[1]
+        else:
+            return Screen.draw.textsize(text_line.text, FONT_SIZE_ALIASES[text_line.size])[1]
 
     @staticmethod
     def centre_x_position(text_line):
