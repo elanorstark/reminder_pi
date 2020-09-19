@@ -48,7 +48,7 @@ class RepeatTask:
 
     @staticmethod
     def load_tasks():
-        with open("data/example.json") as json_file:
+        with open("data/daily_tasks.json") as json_file:
             test = json.load(json_file)
         for task in test["tasks"]:
             hour, minute = task["time"].split()[0:2]

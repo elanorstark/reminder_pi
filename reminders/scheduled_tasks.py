@@ -1,6 +1,7 @@
 import os
 import datetime
 
+from reminders.data import DataIO
 from reminders.events import Alerts
 from reminders.menu import AlertMenu, Menu
 
@@ -56,6 +57,20 @@ class ScheduledTask:
         for each in ScheduledTask.today:
             if isinstance(each, RepeatScheduledTask):
                 ScheduledTask.today.remove(each)
+
+    @staticmethod
+    def write_out_today():
+        DataIO.write_out_today(ScheduledTask.today,
+                               datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))
+
+    @staticmethod
+    def read_in_today():
+        today, date = DataIO.read_in_today()
+        if date == datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+            ScheduledTask.today = today
+        else:
+            if today:
+                DataIO.add_local_history(today, date)
 
 
 class RepeatScheduledTask(ScheduledTask):

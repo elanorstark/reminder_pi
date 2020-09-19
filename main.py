@@ -10,7 +10,25 @@ from reminders.screen import Screen
 from reminders.scheduled_tasks import ScheduledTask
 
 
+def create_log():
+    import json
+    today_json = [{}]
+    log = {"tasks": today_json, "date": [1, 1, 1]}
+    with open("data/log.json", "w") as json_file:
+        json.dump(log, json_file)
+
+
+def opening_data():
+    RepeatTask.load_tasks()
+    ScheduledTask.read_in_today()
+
+
+def saving_data():
+    ScheduledTask.write_out_today()
+
+
 def power_off():
+    saving_data()
     Screen.off()
     time.sleep(0.5)
     os.system("sudo shutdown now")
@@ -18,13 +36,13 @@ def power_off():
 
 
 def exit_program():
+    saving_data()
     Screen.off()
     exit()
 
 
 # example of a menu with sub-menus and actions
 def setup_menu():
-
     shutdown = ActionItem("shutdown", power_off)
     exit_item = ActionItem("exit", exit_program)
 
@@ -49,7 +67,7 @@ def clock_handler():
 
 
 if __name__ == '__main__':
-    RepeatTask.load_tasks()
+    opening_data()
     setup_menu()
     Buttons.setup_buttons(button_handler)
     Menu.current().display()
