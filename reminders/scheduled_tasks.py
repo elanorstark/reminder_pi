@@ -87,7 +87,6 @@ class ScheduledTask:
             ScheduledTask.last_updated = date_log
 
         else:
-            print("OLD LOG", date_log, datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))
             if tasks_log:
                 ScheduledTask.add_to_history(tasks_log, date_log)
             ScheduledTask.today_from_daily_tasks()
@@ -111,12 +110,10 @@ class ScheduledTask:
 
     @staticmethod
     def update_schedule():
-        print("CHECKING UPDATE", ScheduledTask.last_updated)
         time_now = datetime.datetime.now()
         midnight_today = time_now.replace(hour=0, minute=0, second=0, microsecond=0)
 
         if ScheduledTask.last_updated < midnight_today:
-            print("needs updating!!!!!!!!", ScheduledTask.last_updated, midnight_today)
             ScheduledTask.set_up_today()
 
 
@@ -130,20 +127,16 @@ class RepeatScheduledTask(ScheduledTask):
     def on_toggle(self):
         self.on = not self.on
         if not self.on:
-            print("remove from schedule")
             Alerts.remove_from_schedule(self)
             self.complete = False
         if self.on and not self.complete:
-            print("add to")
             Alerts.add_to_schedule(self)
 
     def complete_toggle(self):
         self.complete = not self.complete
         if self.complete:
-            print("remove from")
             Alerts.remove_from_schedule(self)
         if not self.complete and self.on:
-            print("add to")
             Alerts.add_to_schedule(self)
 
     def get_task_time(self):
