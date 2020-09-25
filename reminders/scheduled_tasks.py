@@ -67,7 +67,8 @@ class ScheduledTask:
 
     @staticmethod
     def add_to_history(today, date):
-        DataIO.add_local_history(today, date)
+        new_log = {"tasks": today, "date": [date.year, date.month, date.day]}
+        DataIO.add_local_history(new_log)
 
     @staticmethod
     def set_up_today():

@@ -1,6 +1,8 @@
 import datetime
 import json
 
+from reminders.data import DataIO
+
 
 class RepeatTask:
     tasks = []
@@ -29,8 +31,7 @@ class RepeatTask:
 
     @staticmethod
     def load_tasks():
-        with open("data/daily_tasks.json") as json_file:
-            tasks_from_file = json.load(json_file)
-        for task in tasks_from_file["tasks"]:
+        tasks_from_file = DataIO.read_in_repeat_tasks()
+        for task in tasks_from_file:
             hour, minute = task["time"].split()[0:2]
             RepeatTask.tasks.append(RepeatTask(task["name"], datetime.time(int(hour), int(minute)), task["days"]))

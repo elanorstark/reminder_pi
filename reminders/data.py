@@ -31,8 +31,7 @@ class DataIO:
             return None, datetime.datetime.fromtimestamp(0)
 
     @staticmethod
-    def add_local_history(today, date):
-        new_log = {"tasks": today, "date": [date.year, date.month, date.day]}
+    def add_local_history(new_log):
         with open("data/local_history.json", "r") as json_file:
             log_json = json.load(json_file)
             print("READ local_history.json")
@@ -40,3 +39,9 @@ class DataIO:
         with open("data/local_history.json", "w") as json_file:
             json.dump(log_json, json_file)
             print("WRITE local_history.json")
+
+    @staticmethod
+    def read_in_repeat_tasks():
+        with open("data/daily_tasks.json") as json_file:
+            tasks_from_file = json.load(json_file)
+        return tasks_from_file["tasks"]
